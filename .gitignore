@@ -1,0 +1,6 @@
+.classpath
+.project
+.settings/
+*.war
+*.iml
+*.idea
