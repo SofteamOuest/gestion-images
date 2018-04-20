@@ -30,7 +30,7 @@ public class DropboxService {
     public String uploadFile(String path, byte[] file,String extension) throws IOException,HttpClientErrorException {
 
         UploadDropboxModel uploadDropboxModel = new UploadDropboxModel();
-        uploadDropboxModel.setPath(path+path+"."+extension.substring(extension.indexOf("/")+1,extension.length()));
+        uploadDropboxModel.setPath("/"+path+"/"+path+"."+extension.substring(extension.indexOf("/")+1,extension.length()));
         uploadDropboxModel.setMode("overwrite");
         uploadDropboxModel.setAutorename(false);
         uploadDropboxModel.setMute(true);
@@ -74,7 +74,7 @@ public class DropboxService {
     public ResponseListFolderDropboxModel listFolder(String path) throws HttpClientErrorException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         ListFolderDropboxModel listFolderDropboxModel = new ListFolderDropboxModel();
-        listFolderDropboxModel.setPath(path);
+        listFolderDropboxModel.setPath("/"+path);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", TOKEN_DROPBOX);
