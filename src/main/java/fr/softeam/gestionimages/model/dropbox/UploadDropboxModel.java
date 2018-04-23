@@ -50,4 +50,11 @@ public class UploadDropboxModel {
                 ", mute=" + mute +
                 '}';
     }
+
+    public void initDropboxModel(String path){
+        this.setPath(path);
+        this.setMode("overwrite");
+        this.setAutorename(false);
+        this.setMute(true);
+    }
 }

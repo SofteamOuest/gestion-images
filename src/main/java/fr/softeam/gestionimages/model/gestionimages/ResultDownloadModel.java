@@ -1,23 +1,23 @@
 package fr.softeam.gestionimages.model.gestionimages;
 
 public class ResultDownloadModel {
-    private String path;
+    private String filename;
     private byte[] fileData;
 
     public ResultDownloadModel() {
     }
 
-    public ResultDownloadModel(String path, byte[] fileData) {
-        this.path = path;
+    public ResultDownloadModel(String filename, byte[] fileData) {
+        this.filename = filename;
         this.fileData = fileData;
     }
 
-    public String getPath() {
-        return path;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     public byte[] getFileData() {

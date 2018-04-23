@@ -2,6 +2,7 @@ package fr.softeam.gestionimages.service;
 
 import fr.softeam.gestionimages.exception.GestionImagesException;
 import fr.softeam.gestionimages.model.gestionimages.ResultDownloadModel;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -12,19 +13,22 @@ import java.io.IOException;
 @Service
 public class GestionImagesService {
 
-    private DropboxService dropboxService;
+    private DropboxAdapter dropboxAdapter;
 
     @Autowired
-    public GestionImagesService(DropboxService dropboxService){
-        this.dropboxService = dropboxService;
+    public GestionImagesService(DropboxAdapter dropboxAdapter){
+        this.dropboxAdapter = dropboxAdapter;
     }
 
-    public String upload(String idPerson, MultipartFile file) throws IOException, GestionImagesException {
+    public String upload(String idPerson, MultipartFile file) throws GestionImagesException {
         try{
-            if(!file.getContentType().contains("image")){
-                throw new GestionImagesException("Le fichier n'est pas une image");
+            if(idPerson == null || idPerson.trim().isEmpty()){
+                throw new GestionImagesException("Identifiant de la person vide.");
             }
-            return dropboxService.uploadFile(idPerson,file.getBytes(),file.getContentType());
+            if(file == null){
+                throw new GestionImagesException("Le fichier n'est pas une image.");
+            }
+            return dropboxAdapter.uploadFile(idPerson.toLowerCase(),file.getBytes(),FilenameUtils.getExtension(file.getOriginalFilename()));
         }catch(IOException e){
             throw new GestionImagesException(e.getMessage());
         }catch (HttpClientErrorException ex){
@@ -32,9 +36,12 @@ public class GestionImagesService {
         }
     }
 
-    public ResultDownloadModel download(String path) throws GestionImagesException {
+    public ResultDownloadModel download(String idPerson) throws GestionImagesException {
         try {
-            return dropboxService.downloadFile(path);
+            if(idPerson == null || idPerson.trim().isEmpty()){
+                throw new GestionImagesException("Identifiant de la person vide.");
+            }
+            return dropboxAdapter.downloadFile(idPerson.toLowerCase());
         } catch (IOException e) {
             throw new GestionImagesException(e.getMessage());
         } catch (HttpClientErrorException ex){

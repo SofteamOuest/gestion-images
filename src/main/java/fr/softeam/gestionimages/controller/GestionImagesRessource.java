@@ -9,33 +9,30 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
 
 @RestController
-public class GestionImagesController {
+public class GestionImagesRessource {
 
     private GestionImagesService gestionImagesService;
 
     @Autowired
-    public GestionImagesController(GestionImagesService gestionImagesService){
+    public GestionImagesRessource(GestionImagesService gestionImagesService){
         this.gestionImagesService = gestionImagesService;
     }
 
     @RequestMapping(value="/photos/{idPerson}",method = RequestMethod.POST)
     public ResponseEntity<?> uploadPhoto(@PathVariable(value = "idPerson") String idPerson,
                                          @RequestParam("file") MultipartFile file) throws GestionImagesException {
-        try{
-            return new ResponseEntity(gestionImagesService.upload(idPerson,file), new HttpHeaders(), HttpStatus.OK);
-        }catch (IOException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity(gestionImagesService.upload(idPerson,file), new HttpHeaders(), HttpStatus.OK);
 
     }
 
     @RequestMapping(value="/photos/{idPerson}",method = RequestMethod.GET)
     public ResponseEntity<?> downloadPhoto(@PathVariable(value = "idPerson") String idPerson) throws GestionImagesException {
         ResultDownloadModel resultDownloadModel = gestionImagesService.download(idPerson);
-        return new ResponseEntity(resultDownloadModel.getFileData(), new HttpHeaders(), HttpStatus.OK);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Filename",resultDownloadModel.getFilename());
+        return new ResponseEntity(resultDownloadModel.getFileData(), headers, HttpStatus.OK);
     }
 
     @ExceptionHandler(GestionImagesException.class)
