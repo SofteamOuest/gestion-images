@@ -1,10 +1,10 @@
 package fr.softeam.gestionimages.model.dropbox;
 
 public class UploadDropboxModel {
-    String path;
-    String mode;
-    Boolean autorename;
-    Boolean mute;
+    private String path;
+    private String mode;
+    private Boolean autorename;
+    private Boolean mute;
 
     public UploadDropboxModel() {
     }

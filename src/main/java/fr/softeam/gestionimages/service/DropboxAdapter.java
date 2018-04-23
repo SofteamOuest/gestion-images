@@ -103,13 +103,13 @@ public class DropboxAdapter {
         return responseListFolderDropboxModel;
     }
 
-    public String getOneFile(ResponseListFolderDropboxModel responseListFolderDropboxModel) throws GestionImagesException {
+    public String getOneFile(ResponseListFolderDropboxModel responseListFolderDropboxModel) {
          Optional<EntriesItem> entriesItem = responseListFolderDropboxModel.getEntries()
                 .stream().filter(s -> s.getTag().equals("file")).findFirst();
         return entriesItem.map(EntriesItem::getPathLower).orElse(null);
     }
 
-    public void deleteFile(String path) throws HttpClientErrorException, JsonProcessingException {
+    private void deleteFile(String path) throws HttpClientErrorException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         DeleteDropboxModel deleteDropboxModel = new DeleteDropboxModel(path);
         HttpHeaders headers = new HttpHeaders();
