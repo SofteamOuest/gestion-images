@@ -37,7 +37,7 @@ public class DropboxAdapter {
     @Value("${DELETE_URI")
     private String DELETE_URI;
 
-    public String uploadFile(String idPerson, byte[] file,String extension) throws IOException, HttpClientErrorException, GestionImagesException {
+    public String uploadFile(String idPerson, byte[] file,String extension) throws IOException, HttpClientErrorException {
         ObjectMapper mapper = new ObjectMapper();
         String path = "/"+idPerson+"/"+idPerson+"."+extension;
 
@@ -88,7 +88,7 @@ public class DropboxAdapter {
         return new ResultDownloadModel(responseDownloadDropboxModel.getName(),body);
     }
 
-    public ResponseListFolderDropboxModel listFolder(String idPerson) throws HttpClientErrorException, IOException {
+    private ResponseListFolderDropboxModel listFolder(String idPerson) throws HttpClientErrorException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         ListFolderDropboxModel listFolderDropboxModel = new ListFolderDropboxModel();
         listFolderDropboxModel.setPath("/"+idPerson);
@@ -98,12 +98,10 @@ public class DropboxAdapter {
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(listFolderDropboxModel), headers);
         HttpEntity<String> responseEntity =
                 restTemplate.exchange(API_ROOT_URI + LIST_FOLDER_URI, HttpMethod.POST, entity, String.class);
-        ResponseListFolderDropboxModel responseListFolderDropboxModel =
-                mapper.readValue(responseEntity.getBody(), ResponseListFolderDropboxModel.class);
-        return responseListFolderDropboxModel;
+        return mapper.readValue(responseEntity.getBody(), ResponseListFolderDropboxModel.class);
     }
 
-    public String getOneFile(ResponseListFolderDropboxModel responseListFolderDropboxModel) {
+    private String getOneFile(ResponseListFolderDropboxModel responseListFolderDropboxModel) {
          Optional<EntriesItem> entriesItem = responseListFolderDropboxModel.getEntries()
                 .stream().filter(s -> s.getTag().equals("file")).findFirst();
         return entriesItem.map(EntriesItem::getPathLower).orElse(null);
