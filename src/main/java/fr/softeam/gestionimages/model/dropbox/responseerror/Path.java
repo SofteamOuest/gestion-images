@@ -1,6 +1,7 @@
 package fr.softeam.gestionimages.model.dropbox.responseerror;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.annotation.Generated;
 
 @Generated("com.robohorse.robopojogenerator")

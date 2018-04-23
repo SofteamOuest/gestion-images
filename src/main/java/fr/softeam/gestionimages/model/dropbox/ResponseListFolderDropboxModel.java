@@ -1,10 +1,10 @@
 package fr.softeam.gestionimages.model.dropbox;
 
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.softeam.gestionimages.model.dropbox.responselistfolder.EntriesItem;
 
 import javax.annotation.Generated;
+import java.util.List;
 
 @Generated("com.robohorse.robopojogenerator")
 public class ResponseListFolderDropboxModel{
