@@ -2,10 +2,13 @@ package fr.softeam.gestionimages.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.softeam.gestionimages.enums.GIE;
 import fr.softeam.gestionimages.exception.GestionImagesException;
 import fr.softeam.gestionimages.model.dropbox.*;
 import fr.softeam.gestionimages.model.dropbox.responselistfolder.EntriesItem;
 import fr.softeam.gestionimages.model.gestionimages.ResultDownloadModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -22,6 +25,13 @@ public class DropboxAdapter {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    public DropboxAdapter(RestTemplate restTemplate){
+        this.restTemplate = restTemplate;
+    }
+
+    static final Logger LOG = LoggerFactory.getLogger(DropboxAdapter.class);
+
     @Value("${CONTENT_ROOT_URI}")
     private String CONTENT_ROOT_URI;
     @Value("${API_ROOT_URI}")
@@ -34,21 +44,31 @@ public class DropboxAdapter {
     private String DOWNLOAD_URI;
     @Value("${LIST_FOLDER_URI}")
     private String LIST_FOLDER_URI;
-    @Value("${DELETE_URI")
+    @Value("${DELETE_URI}")
     private String DELETE_URI;
 
-    public String uploadFile(String idPerson, byte[] file,String extension) throws IOException, HttpClientErrorException {
+    public String uploadAndDeleteFile(String idPerson, byte[] file,String extension) throws IOException, HttpClientErrorException, GestionImagesException {
         ObjectMapper mapper = new ObjectMapper();
         String path = "/"+idPerson+"/"+idPerson+"."+extension;
-
-        UploadDropboxModel uploadDropboxModel = new UploadDropboxModel();
-        uploadDropboxModel.initDropboxModel(path);
 
         //Controle si un fichier existe deja dans le dossier avec une autre extension
         String pathFileDb = getOneFile(listFolder(idPerson));
         if(pathFileDb != null && !path.equals(pathFileDb)){
-            deleteFile(pathFileDb);
+            try {
+                deleteFile(pathFileDb);
+            }catch (Exception e){
+                throw new GestionImagesException(e.getMessage());
+            }
         }
+        return uploadFile(path,file);
+    }
+
+    private String uploadFile(String path, byte[] file) throws IOException, HttpClientErrorException {
+        LOG.info("Appel POST sur "+CONTENT_ROOT_URI+UPLOAD_URI);
+        ObjectMapper mapper = new ObjectMapper();
+
+        UploadDropboxModel uploadDropboxModel = new UploadDropboxModel();
+        uploadDropboxModel.initDropboxModel(path);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -62,12 +82,12 @@ public class DropboxAdapter {
         return "Fichier déposé sur dropbox.";
     }
 
-    public ResultDownloadModel downloadFile(String idPerson) throws GestionImagesException, IOException {
-
+    ResultDownloadModel downloadFile(String idPerson) throws GestionImagesException, IOException {
+        LOG.info("Appel POST sur "+CONTENT_ROOT_URI+DOWNLOAD_URI);
         ObjectMapper mapper = new ObjectMapper();
         String path = getOneFile(listFolder(idPerson));
         if(path == null){
-            throw new GestionImagesException("Pas de fichier dans le dossier de la personne : "+idPerson);
+            throw new GestionImagesException(GIE.CODE_003,idPerson);
         }
         DownloadDropboxModel downloadDropboxModel = new DownloadDropboxModel();
         downloadDropboxModel.setPath(path);
@@ -89,6 +109,7 @@ public class DropboxAdapter {
     }
 
     private ResponseListFolderDropboxModel listFolder(String idPerson) throws HttpClientErrorException, IOException {
+        LOG.info("Appel POST sur "+API_ROOT_URI + LIST_FOLDER_URI);
         ObjectMapper mapper = new ObjectMapper();
         ListFolderDropboxModel listFolderDropboxModel = new ListFolderDropboxModel();
         listFolderDropboxModel.setPath("/"+idPerson);
@@ -108,6 +129,7 @@ public class DropboxAdapter {
     }
 
     private void deleteFile(String path) throws HttpClientErrorException, JsonProcessingException {
+        LOG.info("Appel POST sur "+API_ROOT_URI + DELETE_URI);
         ObjectMapper mapper = new ObjectMapper();
         DeleteDropboxModel deleteDropboxModel = new DeleteDropboxModel(path);
         HttpHeaders headers = new HttpHeaders();
@@ -115,6 +137,6 @@ public class DropboxAdapter {
         headers.set("Authorization", TOKEN_DROPBOX);
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(deleteDropboxModel), headers);
         HttpEntity<String> responseEntity =
-                restTemplate.exchange(API_ROOT_URI + LIST_FOLDER_URI, HttpMethod.POST, entity, String.class);
+                restTemplate.exchange(API_ROOT_URI + DELETE_URI, HttpMethod.POST, entity, String.class);
     }
 }

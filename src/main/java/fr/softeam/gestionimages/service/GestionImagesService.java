@@ -1,5 +1,6 @@
 package fr.softeam.gestionimages.service;
 
+import fr.softeam.gestionimages.enums.GIE;
 import fr.softeam.gestionimages.exception.GestionImagesException;
 import fr.softeam.gestionimages.model.gestionimages.ResultDownloadModel;
 import org.apache.commons.io.FilenameUtils;
@@ -23,12 +24,15 @@ public class GestionImagesService {
     public String upload(String idPerson, MultipartFile file) throws GestionImagesException {
         try{
             if(idPerson == null || idPerson.trim().isEmpty()){
-                throw new GestionImagesException("Identifiant de la person vide.");
+                throw new GestionImagesException(GIE.CODE_001,idPerson);
             }
             if(file == null){
-                throw new GestionImagesException("Le fichier n'est pas une image.");
+                throw new GestionImagesException(GIE.CODE_002);
             }
-            return dropboxAdapter.uploadFile(idPerson.toLowerCase(),file.getBytes(),FilenameUtils.getExtension(file.getOriginalFilename()));
+            return dropboxAdapter.uploadAndDeleteFile(
+                    idPerson.toLowerCase(),
+                    file.getBytes(),
+                    FilenameUtils.getExtension(file.getOriginalFilename()));
         }catch(IOException e){
             throw new GestionImagesException(e.getMessage());
         }catch (HttpClientErrorException ex){
@@ -38,15 +42,11 @@ public class GestionImagesService {
 
     public ResultDownloadModel download(String idPerson) throws GestionImagesException {
         try {
-            if(idPerson == null || idPerson.trim().isEmpty()){
-                throw new GestionImagesException("Identifiant de la person vide.");
-            }
             return dropboxAdapter.downloadFile(idPerson.toLowerCase());
         } catch (IOException e) {
             throw new GestionImagesException(e.getMessage());
         } catch (HttpClientErrorException ex){
             throw new GestionImagesException(ex.getResponseBodyAsString());
         }
-
     }
 }

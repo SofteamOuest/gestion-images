@@ -3,6 +3,8 @@ package fr.softeam.gestionimages.controller;
 import fr.softeam.gestionimages.exception.GestionImagesException;
 import fr.softeam.gestionimages.model.gestionimages.ResultDownloadModel;
 import fr.softeam.gestionimages.service.GestionImagesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class GestionImagesRessource {
+
+    static final Logger LOG = LoggerFactory.getLogger(GestionImagesService.class);
 
     private GestionImagesService gestionImagesService;
 
@@ -37,6 +41,7 @@ public class GestionImagesRessource {
 
     @ExceptionHandler(GestionImagesException.class)
     public ResponseEntity handleError(GestionImagesException exc){
+        LOG.info("ExceptionHandler | "+ exc.getMessage());
         return new ResponseEntity(exc.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
