@@ -1,7 +1,10 @@
 package fr.softeam.gestionimages.model.dropbox;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(value = { "media_info" })
 public class ResponseDownloadDropboxModel{
 
 	@JsonProperty("path_display")
