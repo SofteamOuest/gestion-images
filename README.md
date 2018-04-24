@@ -4,7 +4,7 @@
 GET /photos/{identifiant_personne}
 
 Modèle du retour
-* Image dans le format en binary-data
+* Image dans le body au format binary-data
 * nom de l'image (nom+extension) dans le header <filename>
 
 
