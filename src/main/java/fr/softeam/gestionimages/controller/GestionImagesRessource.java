@@ -41,7 +41,6 @@ public class GestionImagesRessource {
 
     @ExceptionHandler(GestionImagesException.class)
     public ResponseEntity handleError(GestionImagesException exc){
-        LOG.info("ExceptionHandler | "+ exc.getMessage());
         return new ResponseEntity(exc.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 

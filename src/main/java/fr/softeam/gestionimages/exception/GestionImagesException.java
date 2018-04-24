@@ -15,4 +15,8 @@ public class GestionImagesException extends Exception {
     public GestionImagesException(GIE gie, String param){
         super(gie.getMessage()+" "+param);
     }
+
+    public GestionImagesException(String reason, Throwable cause){
+        super(reason, cause);
+    }
 }
