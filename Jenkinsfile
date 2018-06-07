@@ -8,7 +8,7 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
         containerTemplate(name: 'jnlp', image: 'jenkinsci/jnlp-slave:alpine'),
 
         // un conteneur pour le build maven
-        containerTemplate(name: 'gradle', image: 'maven', privileged: true, ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'maven', image: 'maven', privileged: true, ttyEnabled: true, command: 'cat'),
 
         // un conteneur pour construire les images docker
         containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
@@ -44,7 +44,7 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
         container('maven') {
 
             stage('build sources') {
-                sh 'maven clean install'
+                sh 'maven clean install -DskipTests'
             }
         }
 
