@@ -2,9 +2,9 @@ FROM java:8
 
 MAINTAINER pjboceno@gmail.com
 
-WORKDIR /apps/gestion-images
+WORKDIR /apps/
 
-COPY build/libs/gestion-images.jar /apps/api-gateway/gestion-images.jar
+COPY target/gestion-images.jar /apps/gestion-images.jar
 
 EXPOSE 8080
 

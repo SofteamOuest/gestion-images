@@ -33,10 +33,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
         </dependency>
-        <dependency>
+     <!--   <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-        </dependency>
+            <version>RELEASE</version>
+        </dependency>-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -53,6 +54,7 @@
         </dependency>
     </dependencies>
     <build>
+        <finalName>gestion-images</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
