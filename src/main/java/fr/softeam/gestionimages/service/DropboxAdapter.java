@@ -33,19 +33,19 @@ public class DropboxAdapter {
     static final Logger LOG = LoggerFactory.getLogger(DropboxAdapter.class);
 
     @Value("${CONTENT_ROOT_URI}")
-    private String CONTENT_ROOT_URI;
+    private String contentRootUri;
     @Value("${API_ROOT_URI}")
-    private String API_ROOT_URI;
+    private String apiRootUri;
     @Value("${TOKEN_DROPBOX}")
-    private String TOKEN_DROPBOX;
+    private String tokenDropbox;
     @Value("${UPLOAD_URI}")
-    private String UPLOAD_URI;
+    private String uploadUri;
     @Value("${DOWNLOAD_URI}")
-    private String DOWNLOAD_URI;
+    private String downloadUri;
     @Value("${LIST_FOLDER_URI}")
-    private String LIST_FOLDER_URI;
+    private String listFolderUri;
     @Value("${DELETE_URI}")
-    private String DELETE_URI;
+    private String deleteUri;
 
     public String uploadAndDeleteFile(String idPerson, byte[] file,String extension) throws IOException, HttpClientErrorException, GestionImagesException {
         ObjectMapper mapper = new ObjectMapper();
@@ -64,7 +64,7 @@ public class DropboxAdapter {
     }
 
     private String uploadFile(String path, byte[] file) throws IOException, HttpClientErrorException {
-        LOG.info("Appel POST sur "+CONTENT_ROOT_URI+UPLOAD_URI);
+        LOG.info("Appel POST sur "+ contentRootUri + uploadUri);
         ObjectMapper mapper = new ObjectMapper();
 
         UploadDropboxModel uploadDropboxModel = new UploadDropboxModel();
@@ -72,18 +72,18 @@ public class DropboxAdapter {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.set("Authorization",TOKEN_DROPBOX);
+        headers.set("Authorization", "Bearer "+ tokenDropbox);
 
         headers.set("Dropbox-API-Arg",mapper.writeValueAsString(uploadDropboxModel));
 
         HttpEntity<byte[]> entity = new HttpEntity<>(file, headers);
         ResponseEntity<String> responseEntity =
-                restTemplate.exchange(CONTENT_ROOT_URI+UPLOAD_URI,HttpMethod.POST,entity,String.class);
+                restTemplate.exchange(contentRootUri + uploadUri,HttpMethod.POST,entity,String.class);
         return "Fichier déposé sur dropbox.";
     }
 
     ResultDownloadModel downloadFile(String idPerson) throws GestionImagesException, IOException {
-        LOG.info("Appel POST sur "+CONTENT_ROOT_URI+DOWNLOAD_URI);
+        LOG.info("Appel POST sur "+ contentRootUri + downloadUri);
         ObjectMapper mapper = new ObjectMapper();
         String path = getOneFile(listFolder(idPerson));
         if(path == null){
@@ -92,13 +92,13 @@ public class DropboxAdapter {
         DownloadDropboxModel downloadDropboxModel = new DownloadDropboxModel();
         downloadDropboxModel.setPath(path);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",TOKEN_DROPBOX);
+        headers.set("Authorization","Bearer "+ tokenDropbox);
         headers.setContentType(MediaType.TEXT_PLAIN);
 
         headers.set("Dropbox-API-Arg",mapper.writeValueAsString(downloadDropboxModel));
         HttpEntity<String> entity = new HttpEntity<>("", headers);
         HttpEntity<byte[]> responseEntity =
-                restTemplate.exchange(CONTENT_ROOT_URI+DOWNLOAD_URI,HttpMethod.POST,entity,byte[].class);
+                restTemplate.exchange(contentRootUri + downloadUri,HttpMethod.POST,entity,byte[].class);
 
         //Lecture de la reponse
         byte[] body = responseEntity.getBody();
@@ -109,16 +109,16 @@ public class DropboxAdapter {
     }
 
     private ResponseListFolderDropboxModel listFolder(String idPerson) throws HttpClientErrorException, IOException {
-        LOG.info("Appel POST sur "+API_ROOT_URI + LIST_FOLDER_URI);
+        LOG.info("Appel POST sur "+ apiRootUri + listFolderUri);
         ObjectMapper mapper = new ObjectMapper();
         ListFolderDropboxModel listFolderDropboxModel = new ListFolderDropboxModel();
         listFolderDropboxModel.setPath("/"+idPerson);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", TOKEN_DROPBOX);
+        headers.set("Authorization", "Bearer "+ tokenDropbox);
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(listFolderDropboxModel), headers);
         HttpEntity<String> responseEntity =
-                restTemplate.exchange(API_ROOT_URI + LIST_FOLDER_URI, HttpMethod.POST, entity, String.class);
+                restTemplate.exchange(apiRootUri + listFolderUri, HttpMethod.POST, entity, String.class);
         return mapper.readValue(responseEntity.getBody(), ResponseListFolderDropboxModel.class);
     }
 
@@ -129,14 +129,14 @@ public class DropboxAdapter {
     }
 
     private void deleteFile(String path) throws HttpClientErrorException, JsonProcessingException {
-        LOG.info("Appel POST sur "+API_ROOT_URI + DELETE_URI);
+        LOG.info("Appel POST sur "+ apiRootUri + deleteUri);
         ObjectMapper mapper = new ObjectMapper();
         DeleteDropboxModel deleteDropboxModel = new DeleteDropboxModel(path);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", TOKEN_DROPBOX);
+        headers.set("Authorization", "Bearer "+ tokenDropbox);
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(deleteDropboxModel), headers);
         HttpEntity<String> responseEntity =
-                restTemplate.exchange(API_ROOT_URI + DELETE_URI, HttpMethod.POST, entity, String.class);
+                restTemplate.exchange(apiRootUri + deleteUri, HttpMethod.POST, entity, String.class);
     }
 }
