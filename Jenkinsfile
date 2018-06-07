@@ -52,9 +52,6 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
 
             stage('build docker image') {
 
-
-                sh 'ls -la build/libs'
-
                 sh "docker build -t registry.k8.wildwidewest.xyz/repository/docker-repository/pocs/meltingpoc-gestion-images:$now ."
 
                 sh 'mkdir /etc/docker'
