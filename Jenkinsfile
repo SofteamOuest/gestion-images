@@ -44,7 +44,7 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
         container('maven') {
 
             stage('build sources') {
-                sh 'mvn clean install -DskipTests'
+                sh 'mvn clean install -DskipTests sonar:sonar -Dsonar.host.url=http://sonarqube.k8.wildwidewest.xyz -Dsonar.java.binaries=target'
             }
         }
 
