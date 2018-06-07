@@ -44,7 +44,7 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
         container('maven') {
 
             stage('build sources') {
-                sh 'maven clean install -DskipTests'
+                sh 'mvn clean install -DskipTests'
             }
         }
 
