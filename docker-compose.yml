@@ -1,0 +1,6 @@
+version: '3.2'
+services:
+
+  gestion-images:
+    image: registry.k8.wildwidewest.xyz/repository/docker-repository/pocs/meltingpoc-gestion-images:${tag}
+    build: .
