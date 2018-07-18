@@ -72,10 +72,10 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
 
             stage('deploy') {
 
-                build job: "/SofteamOuest/gestion-images-run/master",
+                build job: "/SofteamOuest/chart-run/master",
                         wait: false,
-                        parameters: [[$class: 'StringParameterValue', name: 'image', value: "$now"]]
-
+                        parameters: [string(name: 'image', value: "$now"),
+                                        string(name: 'chart', value: "gestion-images")]
             }
         }
     }
