@@ -38,7 +38,7 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
         def now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
 
         stage('checkout sources') {
-            checkout scm;
+            checkout scm
         }
 
         container('maven') {
@@ -57,11 +57,9 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
                 // le registry est insecure (pas de https)
                 sh 'echo {"insecure-registries" : ["registry.k8.wildwidewest.xyz"]} > /etc/docker/daemon.json'
 
-                withCredentials([string(credentialsId: 'nexus_password', variable: 'NEXUS_PWD'),
-                                 string(credentialsId: 'registry_url', variable: 'REGISTRY_URL')]) {
+                withCredentials([string(credentialsId: 'nexus_password', variable: 'NEXUS_PWD')]) {
 
-                    sh "docker login -u admin -p ${NEXUS_PWD} ${REGISTRY_URL}"
-                    
+                    sh "docker login -u admin -p ${NEXUS_PWD} registry.k8.wildwidewest.xyz"
                 }
 
                 sh "tag=$now docker-compose build"
