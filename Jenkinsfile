@@ -44,15 +44,13 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
         container('maven') {
 
             stage('build sources') {
-                sh 'mvn clean install -DskipTests sonar:sonar -Dsonar.host.url=http://sonarqube.k8.wildwidewest.xyz -Dsonar.java.binaries=target'
+                sh 'mvn clean install -DskipTests sonar:sonar -Dsonar.host.url=http://sonarqube-sonarqube:9000 -Dsonar.java.binaries=target'
             }
         }
 
         container('docker') {
 
             stage('build docker image') {
-
-                sh "docker build -t registry.k8.wildwidewest.xyz/repository/docker-repository/pocs/meltingpoc-gestion-images:$now ."
 
                 sh 'mkdir /etc/docker'
 
@@ -63,10 +61,12 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
                                  string(credentialsId: 'registry_url', variable: 'REGISTRY_URL')]) {
 
                     sh "docker login -u admin -p ${NEXUS_PWD} ${REGISTRY_URL}"
-                    sh "docker push ${REGISTRY_URL}/repository/docker-repository/pocs/meltingpoc-gestion-images:$now"
+                    
                 }
 
+                sh "tag=$now docker-compose build"
 
+                sh "tag=$now docker-compose push"
             }
         }
 
