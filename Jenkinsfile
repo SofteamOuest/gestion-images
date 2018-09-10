@@ -43,9 +43,11 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
 
         container('maven') {
 
-            stage('BUILD SOURCES') {
-                sh 'mvn clean install -DskipTests sonar:sonar -Dsonar.host.url=http://sonarqube-sonarqube:9000 -Dsonar.java.binaries=target'
-            }
+                stage('BUILD SOURCES'){
+                    withCredentials([string(credentialsId: 'sonarqube_token', variable: 'token')]) {
+                        sh 'mvn clean package sonar:sonar -Dsonar.host.url=http://sonarqube-sonarqube:9000 -Dsonar.java.binaries=target -Dsonar.login=${token} -DskipTests'
+                    }
+                }
         }
 
         container('docker') {
