@@ -37,20 +37,20 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
 
         def now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
 
-        stage('checkout sources') {
+        stage('CHECKOUT') {
             checkout scm
         }
 
         container('maven') {
 
-            stage('build sources') {
+            stage('BUILD SOURCES') {
                 sh 'mvn clean install -DskipTests sonar:sonar -Dsonar.host.url=http://sonarqube-sonarqube:9000 -Dsonar.java.binaries=target'
             }
         }
 
         container('docker') {
 
-            stage('build docker image') {
+            stage('BUILD DOCKER IMAGE') {
 
                     sh 'mkdir /etc/docker'
 
@@ -70,7 +70,7 @@ podTemplate(label: 'meltingpoc-gestion-images-pod', nodeSelector: 'medium', cont
 
         container('kubectl') {
 
-            stage('deploy') {
+            stage('RUN') {
 
                 build job: "/SofteamOuest/chart-run/master",
                         wait: false,
